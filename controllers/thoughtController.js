@@ -2,17 +2,29 @@ const { Thought, User } = require('../models');
 
 module.exports = {
   async addReactions(req, res) {
-    try {
+    // try {
       const thoughts = await Thought.find();
       res.json(thoughts);
-    } catch (err) {
-      res.status(500).json(err);
-    }
+    // } catch (err) {
+    //   res.status(500).json(err);
+    // }
   },
   async getSingleThought(req, res) {
     try {
       const thought = await Thought.findOne({ _id: req.params.thoughtId })
 
+      if (!thought) {
+        return res.status(404).json({ message: 'No Thought with that ID' });
+      }
+
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  async getThought(req, res) {
+    try {
+      const thought = await Thought.findAll({ _id: req.params.thoughtId })
       if (!thought) {
         return res.status(404).json({ message: 'No Thought with that ID' });
       }
@@ -71,8 +83,8 @@ module.exports = {
       }
 
       const user = await User.findOneAndUpdate(
-        { thoughts: req.params.thoughtId },
-        { $pull: { Thoughts: req.params.thoughtId } },
+        {_id: req.body.userId },
+        { $pull: { thoughts: req.params.thoughtId } },
         { new: true }
       );
 
